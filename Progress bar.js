@@ -7,7 +7,7 @@ class CircularProgress extends HTMLElement {
       <style>
         :host {
           --size: 220px;
-          --track-color: #e0e0e0;
+          --track-color:rgb(194, 191, 191);
           --transition: 0.4s ease;
         }
 
@@ -17,10 +17,10 @@ class CircularProgress extends HTMLElement {
           align-items: center;
           padding: 1rem;
           color: var(--text-light);
-          transition: color 0.3s ease;
+          transition: color 0.3s ease, background 0.3s ease;
         }
 
-        :host-context(body.dark) .wrapper {
+        :host([dark]) .wrapper {
           color: var(--text-dark);
         }
 
@@ -108,7 +108,7 @@ class CircularProgress extends HTMLElement {
       </style>
 
       <div class="wrapper">
-        <div class="progress-container">
+        <div class="progress-container" id="progress-container" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
           <svg viewBox="0 0 100 100">
             <defs>
               <linearGradient id="gradient">
@@ -130,8 +130,9 @@ class CircularProgress extends HTMLElement {
         <div class="controls">
           <button id="random">Random</button>
           <button id="reset">Reset</button>
-          <div class="theme-toggle" id="theme-toggle">🌓 Toggle Dark Mode</div>
         </div>
+
+        <div class="theme-toggle" id="theme-toggle">🌓 Toggle Dark Mode</div>
       </div>
     `;
   }
@@ -142,6 +143,7 @@ class CircularProgress extends HTMLElement {
     this.labelText = this.shadowRoot.getElementById('label');
     this.progressCircle = this.shadowRoot.querySelector('.progress');
     this.gradient = this.shadowRoot.querySelector('#gradient');
+    this.container = this.shadowRoot.getElementById('progress-container');
     this.radius = 45;
     this.circumference = 2 * Math.PI * this.radius;
 
@@ -164,6 +166,7 @@ class CircularProgress extends HTMLElement {
 
     this.shadowRoot.getElementById('theme-toggle').addEventListener('click', () => {
       document.body.classList.toggle('dark');
+      this.toggleAttribute('dark', document.body.classList.contains('dark'));
     });
 
     this.setProgress(0);
@@ -186,6 +189,7 @@ class CircularProgress extends HTMLElement {
     this.progressCircle.style.strokeDashoffset = offset;
     this.valueText.textContent = `${percent}%`;
     this.labelText.textContent = this.getLabel(percent);
+    this.container.setAttribute('aria-valuenow', percent);
 
     this.gradient.innerHTML = `
       <stop offset="0%" stop-color="${this.getColor(percent)}" />
