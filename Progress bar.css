@@ -16,4 +16,13 @@
   body.dark {
     background: var(--bg-dark);
   }
+.wrapper {
+  color: var(--text-light);
+  transition: color 0.3s ease;
+}
+
+:host-context(body.dark) .wrapper {
+  color: var(--text-dark);
+}
+
   
